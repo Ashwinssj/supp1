@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="error-container">
+        <h1>Error {{ error.code }}</h1>
+        <p>{{ error.description }}</p>
+        <a href="/" class="btn primary">Return Home</a>
+    </div>
+</body>
+</html>

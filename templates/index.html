@@ -1,0 +1,118 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Analytics Dashboard</title>
+    <!-- Fix CSS reference -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=1) }}">
+    <!-- Fix JS reference -->
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-truck-loading"></i>
+                <h1>Supply Chain Analytics</h1>
+            </div>
+            <nav class="nav">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Documentation</a>
+                <a href="#">Settings</a>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="upload-container" id="uploadSection">
+                <h2>Upload Supply Chain Data</h2>
+                <p>Upload your CSV file containing supply chain data to begin analysis</p>
+                
+                <div class="upload-box">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-csv"></i>
+                    </div>
+                    <div class="upload-instructions">
+                        <p>Drag & drop your CSV file here</p>
+                        <p>or</p>
+                        <button id="browseButton" class="btn primary">Browse Files</button>
+                        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="upload-notes">
+                    <h3>Expected Data Format</h3>
+                    <p>Your CSV file should contain some of the following columns:</p>
+                    <div class="columns-section">
+                        <h4>Required Columns:</h4>
+                        <ul class="required-columns">
+                            <li><span class="column-badge">Required</span> supplier</li>
+                            <li><span class="column-badge">Required</span> product</li>
+                            <li><span class="column-badge">Required</span> quantity</li>
+                        </ul>
+
+                        <h4>Optional Columns:</h4>
+                        <ul class="optional-columns">
+                            <li>order_id, order_date, delivery_date</li>
+                            <li>cost, source, destination, warehouse</li>
+                            <li>latitude, longitude (for locations)</li>
+                        </ul>
+                    </div>
+                    <p>Don't worry if your data is not perfect - our system will clean and process it.</p>
+                </div>
+                
+                <div id="uploadStatus" class="upload-status" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="uploadProgress"></div>
+                    </div>
+                    <p id="statusMessage">Uploading file...</p>
+                </div>
+            </div>
+            
+            <div class="dashboard-container" id="dashboardPreview">
+                <h2>Dashboard Preview</h2>
+                <p>After uploading your data, you'll see analytics like these:</p>
+                
+                <div class="preview-grid">
+                    <div class="preview-item">
+                        <div class="preview-icon"><i class="fas fa-map-marked-alt"></i></div>
+                        <div class="preview-label">Route Maps</div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon"><i class="fas fa-chart-bar"></i></div>
+                        <div class="preview-label">Inventory Analysis</div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon"><i class="fas fa-clock"></i></div>
+                        <div class="preview-label">Delivery Time Tracking</div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="preview-label">Cost Analysis</div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon"><i class="fas fa-user-check"></i></div>
+                        <div class="preview-label">Supplier Performance</div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon"><i class="fas fa-robot"></i></div>
+                        <div class="preview-label">AI Assistant</div>
+                    </div>
+                </div>
+                
+                <p>Interactive visualizations will help you optimize your supply chain operations.</p>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 Supply Chain Analytics Dashboard</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+</html>

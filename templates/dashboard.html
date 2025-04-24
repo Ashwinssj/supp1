@@ -1,0 +1,169 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Analytics Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=1) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.16.1/plotly.min.js"></script>
+</head>
+<body>
+    <div class="app-container dashboard-mode">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-truck-loading"></i>
+                <h1>Supply Chain Analytics</h1>
+            </div>
+            <nav class="nav">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Documentation</a>
+                <a href="#">Settings</a>
+            </nav>
+            <div class="header-controls">
+                <button id="uploadNewBtn" class="btn secondary"><i class="fas fa-upload"></i> Upload New Data</button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <aside class="dashboard-sidebar">
+                <div class="data-summary">
+                    <h3>Data Summary</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Records</div>
+                        <div class="summary-value">{{ summary.get('record_count', 'N/A') }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Date Range</div>
+                        <div class="summary-value">{{ summary.get('date_range', 'N/A') }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Products</div>
+                        <div class="summary-value">{{ summary.get('product_count', 'N/A') }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Suppliers</div>
+                        <div class="summary-value">{{ summary.get('supplier_count', 'N/A') }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Warehouses</div>
+                        <div class="summary-value">{{ summary.get('warehouse_count', 'N/A') }}</div>
+                    </div>
+                </div>
+                
+                <div class="ai-assistant">
+                    <h3>AI Assistant</h3>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message system">
+                                <div class="message-content">
+                                    Hello! I'm your Supply Chain AI Assistant. Ask me anything about your data and I'll provide insights.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="aiQuery" placeholder="Ask a question about your data...">
+                            <button id="aiSubmit"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    <div class="assistant-suggestions">
+                        <div class="suggestion" data-query="What are the top 3 performing suppliers?">Top performing suppliers?</div>
+                        <div class="suggestion" data-query="Which routes have the longest delivery times?">Longest delivery routes?</div>
+                        <div class="suggestion" data-query="How is inventory distributed across warehouses?">Inventory distribution?</div>
+                    </div>
+                </div>
+            </aside>
+            
+            <main class="dashboard-main">
+                <div class="dashboard-header">
+                    <h2>Supply Chain Analytics Dashboard</h2>
+                    <div class="view-controls">
+                        <button class="btn icon-btn" title="Export data"><i class="fas fa-download"></i></button>
+                        <button class="btn icon-btn" title="Print dashboard"><i class="fas fa-print"></i></button>
+                        <button class="btn icon-btn" title="Dashboard settings"><i class="fas fa-cog"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chart-container full-width" id="routeMapContainer">
+                    <div class="chart-header">
+                        <h3>Supply Chain Route Map</h3>
+                        <div class="chart-controls">
+                            <button class="btn icon-btn" title="Zoom to fit"><i class="fas fa-expand"></i></button>
+                            <button class="btn icon-btn" title="Filter routes"><i class="fas fa-filter"></i></button>
+                        </div>
+                    </div>
+                    <div class="chart-body" id="routeMap"></div>
+                </div>
+                
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Inventory Levels</h3>
+                            <div class="chart-controls">
+                                <button class="btn icon-btn chart-info" title="More info"><i class="fas fa-info-circle"></i></button>
+                                <button class="btn icon-btn chart-expand" title="Expand"><i class="fas fa-expand"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body" id="inventoryChart"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Delivery Time Analysis</h3>
+                            <div class="chart-controls">
+                                <button class="btn icon-btn chart-info" title="More info"><i class="fas fa-info-circle"></i></button>
+                                <button class="btn icon-btn chart-expand" title="Expand"><i class="fas fa-expand"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body" id="deliveryTimeChart"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Cost Analysis</h3>
+                            <div class="chart-controls">
+                                <button class="btn icon-btn chart-info" title="More info"><i class="fas fa-info-circle"></i></button>
+                                <button class="btn icon-btn chart-expand" title="Expand"><i class="fas fa-expand"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body" id="costAnalysisChart"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Supplier Performance</h3>
+                            <div class="chart-controls">
+                                <button class="btn icon-btn chart-info" title="More info"><i class="fas fa-info-circle"></i></button>
+                                <button class="btn icon-btn chart-expand" title="Expand"><i class="fas fa-expand"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body" id="supplierPerformanceChart"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Detail Modal -->
+        <div class="modal" id="detailModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="detailTitle">Item Details</h3>
+                    <button class="close-btn" id="closeDetailModal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body" id="detailContent">
+                    <!-- Detail content will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>&copy; 2025 Supply Chain Analytics Dashboard</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

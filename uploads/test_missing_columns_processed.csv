@@ -1,0 +1,4 @@
+order_id,cost,destination,supplier,product,quantity,on_time_delivery,quality_score
+1,49.99,Chicago,Unknown Supplier,Unspecified Product,1,0.8141557374738384,0.7693689881275548
+2,89.5,New York,Unknown Supplier,Unspecified Product,1,0.8141557374738384,0.7693689881275548
+3,150.0,Los Angeles,Unknown Supplier,Unspecified Product,1,0.8141557374738384,0.7693689881275548

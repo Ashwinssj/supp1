@@ -1,0 +1,66 @@
+/* static/css/style.css */
+
+/* Global Styles */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --light-bg: #f5f7fa;
+    --dark-bg: #34495e;
+    --text-color: #333;
+    --light-text: #f5f7fa;
+    --border-color: #ddd;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --gradient-primary: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    --neon-effect: 0 0 15px rgba(52, 152, 219, 0.5);
+    --cursor-trail: rgba(52, 152, 219, 0.3);
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    cursor: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+    background-color: var(--light-bg);
+    line-height: 1.6;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    width: 8px;
+    height: 8px;
+    background: var(--cursor-trail);
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    z-index: 9999;
+    transition: 
+        transform 0.3s ease-out,
+        opacity 0.8s ease-out,
+        width 0.4s ease,
+        height 0.4s ease;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+    animation: cursorPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes cursorPulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.4); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}

@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 import plotly.express as px
+import traceback
 
 # Load environment variables
 load_dotenv()
@@ -779,49 +780,52 @@ if st.session_state.processed_data is not None:
                     st.error(f"Error generating Excel report: {str(e)}")
 
 
-def process_csv(file_like_object):
-    """
-    Reads a CSV from a file-like object, cleans column names robustly,
-    and returns a dictionary with the processed DataFrame and summary.
-    """
-    try:
-        # Read directly from the file-like object
-        df = pd.read_csv(file_like_object)
+    def process_csv(file_like_object):
+        """
+        Reads a CSV from a file-like object, cleans column names robustly,
+        and returns a dictionary with the processed DataFrame and summary.
+        """
+        try:
+            # Read directly from the file-like object
+            df = pd.read_csv(file_like_object)
 
-        # --- Perform robust column cleaning ---
-        # 1. Convert all column names to string type FIRST
-        df.columns = df.columns.astype(str)
-        # 2. Now apply string methods safely
-        df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_', regex=False) # Use regex=False for literal space replacement
-        # --- End of robust column cleaning ---
+            # --- Perform robust column cleaning ---
+            # 1. Convert all column names to string type FIRST
+            df.columns = df.columns.astype(str)
+            # 2. Now apply string methods safely
+            df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_', regex=False)
+            # --- End of robust column cleaning ---
 
-        # --- Add any other processing on the DataFrame 'df' here ---
-        # Example: Handle missing values if needed
-        # df.fillna(value=pd.NA, inplace=True) # Or specific filling strategies
+            # --- Add any other processing on the DataFrame 'df' here ---
+            # Example: Handle missing values if needed
+            # df.fillna(value=pd.NA, inplace=True)
 
-        # --- Generate Summary ---
-        summary = {
-            'record_count': len(df),
-            'column_names': df.columns.tolist(), # Add cleaned column names to summary
-            # Add other relevant summary stats based on df
-            # 'date_range': ... # Example: calculate if a date column exists
-        }
+            # --- Generate Summary ---
+            summary = {
+                'record_count': len(df),
+                'column_names': df.columns.tolist(),
+                # Add other relevant summary stats based on df
+                # 'date_range': ... # Example: calculate if a date column exists
+            }
 
-        # --- Return results ---
-        return {
-            'processed_df': df, # Return the DataFrame directly
-            'summary': summary
-        }
+            # --- Return results ---
+            return {
+                'processed_df': df,
+                'summary': summary
+            }
 
-    except pd.errors.EmptyDataError:
-        st.error("Error processing CSV: The uploaded file is empty.")
-        # Return None or raise a specific error to be caught upstream
-        return None # Or raise ValueError("Uploaded file is empty")
-    except Exception as e:
-        # Catch other potential pandas or processing errors
-        st.error(f"Error processing CSV: {e}")
-        # Log the full error for debugging if needed
-        print(f"Detailed error processing CSV: {traceback.format_exc()}") # Requires: import traceback
-        # Return None or raise a specific error
-        return None # Or raise ValueError(f"Failed to process CSV: {e}")
-                    
+        except pd.errors.EmptyDataError:
+            # Option 1: Let Streamlit handle the error display
+            raise ValueError("Error processing CSV: The uploaded file is empty.")
+            # Option 2: Use st.error (requires importing streamlit as st)
+            # st.error("Error processing CSV: The uploaded file is empty.")
+            # return None # Must return None if using st.error here
+
+        except Exception as e:
+            # Log the full error for debugging on the server
+            print(f"Detailed error processing CSV: {traceback.format_exc()}")
+            # Option 1: Let Streamlit handle the error display
+            raise ValueError(f"Error processing CSV: {e}") # Raise a more informative error
+            # Option 2: Use st.error
+            # st.error(f"Error processing CSV: {e}")
+            # return None # Must return None if using st.error here

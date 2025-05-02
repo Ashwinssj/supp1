@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import io # Import io
 import data_processor
 import os
 from dotenv import load_dotenv
@@ -140,17 +141,17 @@ with st.sidebar:
     if uploaded_file is not None:
         with st.spinner("Processing data..."):
             try:
-                # Ensure uploads directory exists
-                os.makedirs("uploads", exist_ok=True)
-                
-                # Save uploaded file
-                file_path = os.path.join("uploads", uploaded_file.name)
-                with open(file_path, "wb") as f:
-                    f.write(uploaded_file.getbuffer())
-                
-                # Process CSV
-                processed_data = data_processor.process_csv(file_path)
-                df = pd.read_csv(processed_data['processed_file'])
+                # Pass the file-like object directly
+                # You might need to adjust data_processor.process_csv
+                processed_data = data_processor.process_csv(uploaded_file) # <-- Change this
+
+                # Read the processed data (assuming process_csv now returns a DataFrame or path to a temp file it manages)
+                # If process_csv returns the DataFrame directly:
+                df = processed_data['processed_df'] # Assuming it returns a dict with the df
+                # Or if it still saves a temp file and returns the path:
+                # df = pd.read_csv(processed_data['processed_file'])
+                # os.remove(processed_data['processed_file']) # Clean up temp file if created
+
                 st.session_state.processed_data = df
                 st.session_state.data_summary = processed_data['summary']
                 
@@ -776,3 +777,28 @@ if st.session_state.processed_data is not None:
                     st.success("Excel report generated successfully!")
                 except Exception as e:
                     st.error(f"Error generating Excel report: {str(e)}")
+
+
+def process_csv(file_like_object):
+        # Read directly from the file-like object
+    df = pd.read_csv(file_like_object)
+
+        # --- Perform your processing on the DataFrame 'df' ---
+        # Example: Clean column names, handle missing values, etc.
+    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
+        # ... more processing ...
+
+        # --- Generate Summary ---
+    summary = {
+            'record_count': len(df),
+            # ... other summary stats ...
+        }
+
+        # --- Return results ---
+        # No need to save intermediate files unless absolutely necessary
+    return {
+            'processed_df': df, # Return the DataFrame directly
+            'summary': summary
+            # 'processed_file': None # Indicate no file saved
+        }
+                    

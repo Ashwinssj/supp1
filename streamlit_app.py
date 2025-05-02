@@ -140,10 +140,10 @@ with st.sidebar:
     if uploaded_file is not None:
         with st.spinner("Processing data..."):
             try:
-                # Ensure uploads directory exists - make path relative for cloud deployment
+                # Ensure uploads directory exists
                 os.makedirs("uploads", exist_ok=True)
                 
-                # Save uploaded file with relative path
+                # Save uploaded file
                 file_path = os.path.join("uploads", uploaded_file.name)
                 with open(file_path, "wb") as f:
                     f.write(uploaded_file.getbuffer())
@@ -198,7 +198,7 @@ with st.sidebar:
                 st.json(st.session_state.data_summary)
             except Exception as e:
                 st.error(f"Error processing file: {str(e)}")
-    st.components.v1.html(heygen_embed_script, height=500)
+    st.components.v1.html(heygen_embed_script, height=400)
 
 # Main dashboard
 if st.session_state.processed_data is not None:

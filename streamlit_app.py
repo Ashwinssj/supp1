@@ -780,25 +780,48 @@ if st.session_state.processed_data is not None:
 
 
 def process_csv(file_like_object):
+    """
+    Reads a CSV from a file-like object, cleans column names robustly,
+    and returns a dictionary with the processed DataFrame and summary.
+    """
+    try:
         # Read directly from the file-like object
-    df = pd.read_csv(file_like_object)
+        df = pd.read_csv(file_like_object)
 
-        # --- Perform your processing on the DataFrame 'df' ---
-        # Example: Clean column names, handle missing values, etc.
-    df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
-        # ... more processing ...
+        # --- Perform robust column cleaning ---
+        # 1. Convert all column names to string type FIRST
+        df.columns = df.columns.astype(str)
+        # 2. Now apply string methods safely
+        df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_', regex=False) # Use regex=False for literal space replacement
+        # --- End of robust column cleaning ---
+
+        # --- Add any other processing on the DataFrame 'df' here ---
+        # Example: Handle missing values if needed
+        # df.fillna(value=pd.NA, inplace=True) # Or specific filling strategies
 
         # --- Generate Summary ---
-    summary = {
+        summary = {
             'record_count': len(df),
-            # ... other summary stats ...
+            'column_names': df.columns.tolist(), # Add cleaned column names to summary
+            # Add other relevant summary stats based on df
+            # 'date_range': ... # Example: calculate if a date column exists
         }
 
         # --- Return results ---
-        # No need to save intermediate files unless absolutely necessary
-    return {
+        return {
             'processed_df': df, # Return the DataFrame directly
             'summary': summary
-            # 'processed_file': None # Indicate no file saved
         }
+
+    except pd.errors.EmptyDataError:
+        st.error("Error processing CSV: The uploaded file is empty.")
+        # Return None or raise a specific error to be caught upstream
+        return None # Or raise ValueError("Uploaded file is empty")
+    except Exception as e:
+        # Catch other potential pandas or processing errors
+        st.error(f"Error processing CSV: {e}")
+        # Log the full error for debugging if needed
+        print(f"Detailed error processing CSV: {traceback.format_exc()}") # Requires: import traceback
+        # Return None or raise a specific error
+        return None # Or raise ValueError(f"Failed to process CSV: {e}")
                     
